@@ -4,6 +4,7 @@ specifiers:
   '@types/express': ^4.17.17
   '@types/mongoose': ^5.11.97
   '@types/node': '*'
+  envalid: ^7.3.1
   express: ^4.18.2
   mongoose: ^7.2.0
   ts-node: ^10.9.1
@@ -13,6 +14,7 @@ dependencies:
   '@types/express': 4.17.17
   '@types/mongoose': 5.11.97
   '@types/node': 20.2.3
+  envalid: 7.3.1
   express: 4.18.2
   mongoose: 7.2.0
   ts-node: 10.9.1_nzqpvq7mmbjxcdbaxj4j32npy4
@@ -281,6 +283,13 @@ packages:
   /encodeurl/1.0.2:
     resolution: {integrity: sha512-TPJXq8JqFaVYm2CWmPvnP2Iyo4ZSM7/QKcSmuMLDObfpH5fi7RUGmd/rTDf+rut/saiDiQEeVTNgAmJEdAOx0w==}
     engines: {node: '>= 0.8'}
+    dev: false
+
+  /envalid/7.3.1:
+    resolution: {integrity: sha512-KL1YRwn8WcoF/Ty7t+yLLtZol01xr9ZJMTjzoGRM8NaSU+nQQjSWOQKKJhJP2P57bpdakJ9jbxqQX4fGTOicZg==}
+    engines: {node: '>=8.12'}
+    dependencies:
+      tslib: 2.3.1
     dev: false
 
   /escape-html/1.0.3:
@@ -728,6 +737,10 @@ packages:
       typescript: 5.0.4
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
+    dev: false
+
+  /tslib/2.3.1:
+    resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==}
     dev: false
 
   /type-is/1.6.18:
