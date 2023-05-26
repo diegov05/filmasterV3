@@ -1,17 +1,15 @@
 import "dotenv/config"
 import express, { NextFunction, Request, Response } from "express"
-import UserModel from "./models/user"
+import usersRoute from "./routes/users"
+import morgan from "morgan"
 
 const app = express()
 
-app.get('/', async (req, res, next) => {
-    try {
-        const users = await UserModel.find().exec()
-        res.status(200).json(users)
-    } catch (error) {
-        next(error)
-    }
-})
+app.use(morgan('dev'))
+
+app.use(express.json())
+
+app.use("/api/users", usersRoute)
 
 app.use((res, req, next) => {
     next(Error("Endpoint not found."))
