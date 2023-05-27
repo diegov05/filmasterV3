@@ -1,6 +1,7 @@
 {
   "name": "filmaster-frontend",
   "private": true,
+  "proxy": "http://localhost:5173",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -11,6 +12,8 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
+    "@types/axios": "^0.14.0",
+    "axios": "^1.4.0",
     "boring-avatars": "^1.7.0",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
