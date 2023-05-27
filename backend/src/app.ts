@@ -26,7 +26,7 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
     }
     res.status(statusCode).json({
         error: errorMessage,
-        status: 500
+        status: statusCode
     })
 })
 
