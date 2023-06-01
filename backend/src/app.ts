@@ -1,6 +1,7 @@
 import "dotenv/config"
 import express, { NextFunction, Request, Response } from "express"
 import usersRoute from "./routes/users"
+import moviesRoute from "./routes/movies"
 import morgan from "morgan"
 import createHttpError, { isHttpError } from "http-errors"
 
@@ -11,6 +12,8 @@ app.use(morgan('dev'))
 app.use(express.json())
 
 app.use("/api/users", usersRoute)
+
+app.use("/api/movies", moviesRoute)
 
 app.use((res, req, next) => {
     next(createHttpError(404, "Endpoint not found."))
