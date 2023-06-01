@@ -1,11 +1,10 @@
 {
   "name": "filmaster-frontend",
   "private": true,
-  "proxy": "http://localhost:5173",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
@@ -13,6 +12,7 @@
   "dependencies": {
     "@heroicons/react": "^2.0.18",
     "@types/axios": "^0.14.0",
+    "@types/http-proxy-middleware": "^1.0.0",
     "axios": "^1.4.0",
     "boring-avatars": "^1.7.0",
     "localforage": "^1.10.0",
@@ -33,6 +33,7 @@
     "eslint": "^8.38.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
+    "http-proxy-middleware": "^2.0.6",
     "postcss": "^8.4.23",
     "tailwindcss": "^3.3.2",
     "typescript": "^5.0.2",
