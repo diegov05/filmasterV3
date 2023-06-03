@@ -5,6 +5,8 @@ const replySchema = new Schema({
     author: { type: User, required: true },
     content: { type: String, required: true },
     parent: { type: String, required: true },
+    likes: [{ type: String }],
+    dislikes: [{ type: String }],
 }, { timestamps: true })
 
 type Reply = InferSchemaType<typeof replySchema>;

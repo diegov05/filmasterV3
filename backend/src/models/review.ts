@@ -6,7 +6,9 @@ const reviewSchema = new Schema({
     content: { type: String, required: true },
     rating: { type: Number, required: true },
     showId: { type: String, required: true },
-    showType: { type: String, required: true }
+    showType: { type: String, required: true },
+    likes: [{ type: String }],
+    dislikes: [{ type: String }],
 }, { timestamps: true })
 
 type Review = InferSchemaType<typeof reviewSchema>;
