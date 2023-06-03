@@ -1,6 +1,6 @@
 import { FC, useContext, useEffect, useState } from 'react';
 import { Movie } from '../../interfaces/interfaces';
-import { key } from '../../requests';
+import { key } from '../../tmdbRequests';
 import axios from "axios";
 import { AddToWatchList, Loading, NavBar, SearchBar } from '../../components';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/20/solid';

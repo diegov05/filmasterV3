@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { Movie, Review } from '../../interfaces/interfaces';
 import { useLocation, useParams } from 'react-router-dom';
-import { key } from '../../requests';
+import { key } from '../../tmdbRequests';
 import { MovieHeader, Footer, MovieDetails, Trailer, Overview, Reviews, Cast } from '../../containers';
 import { ReviewingBox, EditingBox } from '../../components';
 import images from "../../assets";

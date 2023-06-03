@@ -1,12 +1,11 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import { Movie, UserFavorites } from '../../interfaces/interfaces';
-import { requests } from '../../requests';
+import { Movie } from '../../interfaces/interfaces';
+import { key, requests } from '../../tmdbRequests';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Loading, MovieCard, MoviePoster, FilterButton } from '../../components';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '../../firebase';
 import { collection, doc, onSnapshot } from 'firebase/firestore';
-import { key } from '../../requests';
 import images from "../../assets";
 import "./Carousel.css";
 import axios from 'axios';
@@ -101,30 +100,6 @@ const Carousel: FC<CarouselProps> = (props) => {
             if (user) {
                 setUser(user);
                 const userId = user.uid;
-
-                const userFavoritesRef = doc(collection(db, 'users'), userId);
-
-                onSnapshot(userFavoritesRef, (snapshot) => {
-                    const userFavoritesData = snapshot.data() as UserFavorites;
-                    const stringIds: string[] = [];
-                    const movieArr: { id: string, mediaType: string }[] = [];
-
-                    userFavoritesData.favorites.forEach((movie) => {
-                        stringIds.push(movie.replace(/\D+/g, ''))
-                        const mediaType = movie.replace(/^[\s\d]+/, '')
-                        movieArr.push({ id: movie.replace(/\D+/g, ''), mediaType: mediaType })
-                    })
-                    const fetchMovies = async () => {
-                        const moviePromises = movieArr.map((movie) =>
-                            axios.get(
-                                `https://api.themoviedb.org/3/${movie.mediaType}/${parseInt(movie.id)}?api_key=${key}&language=en-US`
-                            ));
-                        const movieResponses = await Promise.all(moviePromises);
-                        const movieData = movieResponses.map((response) => response.data);
-                        setUserFavoriteMovies(movieData);
-                    };
-                    fetchMovies();
-                });
             } else {
                 setUser(null);
             }
