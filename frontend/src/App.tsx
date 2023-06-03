@@ -1,31 +1,27 @@
-import { useState, FC, useEffect } from 'react'
+import { FC } from 'react'
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { AuthProvider } from './contexts/AuthContext'
+import { Login, MainPage, Movie, Register } from "./pages"
 import "./App.css"
-import { User } from './models/user'
-import axios from 'axios';
 
 interface AppProps {
 
 }
 
 const App: FC<AppProps> = () => {
-    const [users, setUsers] = useState<User[]>([])
-
-    useEffect(() => {
-        async function loadUsers() {
-            try {
-                const response = await axios.get("/api/users", { method: "GET" })
-                const users = response.data
-                setUsers(users)
-            } catch (error) {
-                console.error(error)
-            }
-        }
-        loadUsers()
-    }, [])
-
     return (
-        <div>
-        </div>
+        <>
+            <AuthProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path='/login' element={<Login />} />
+                        <Route path='/register' element={<Register />} />
+                        <Route path='/' element={<MainPage />} />
+                        <Route path='/movie/:id' element={<Movie />} />
+                    </Routes>
+                </BrowserRouter>
+            </AuthProvider >
+        </>
     )
 }
 
