@@ -121,7 +121,7 @@ export const updateReview: RequestHandler<UpdateReviewParams, unknown, UpdateRev
     }
 }
 
-export const deletereview: RequestHandler = async (req, res, next) => {
+export const deleteReview: RequestHandler = async (req, res, next) => {
     const reviewId = req.params.reviewId
 
     try {
