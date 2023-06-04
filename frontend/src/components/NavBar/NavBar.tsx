@@ -2,10 +2,11 @@ import { FC, useEffect, useRef, useState } from 'react'
 import images from "../../assets"
 import { SearchBar } from '../SearchBar/SearchBar'
 import { useNavigate } from 'react-router-dom'
-import { UserIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
-import { User, onAuthStateChanged, signOut } from 'firebase/auth'
-import { auth, db } from '../../firebase'
-import { DocumentData, collection, doc, onSnapshot } from 'firebase/firestore'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { User as FirestoreUser, onAuthStateChanged, signOut } from 'firebase/auth'
+import { auth } from '../../firebase'
+import { User } from '../../models/user'
+import { useUserDocument } from '../../hooks/useUserDocument'
 
 interface NavBarProps {
 
@@ -14,8 +15,8 @@ interface NavBarProps {
 const NavBar: FC<NavBarProps> = () => {
 
     const navigate = useNavigate()
-    const [user, setUser] = useState<User | null>(null);
-    const [userData, setUserData] = useState<DocumentData | undefined>();
+    const [user, setUser] = useState<FirestoreUser | null>(null);
+    const [userDocument, setUserDocument] = useState<User | null>(null);
     const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
     const [isToggled, setIsToggled] = useState<boolean>(false);
     const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -60,13 +61,8 @@ const NavBar: FC<NavBarProps> = () => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
                 setUser(user);
-                const userRef = doc(collection(db, 'users'), user.uid);
-
-                onSnapshot(userRef, (snapshot) => {
-                    const userData = snapshot.data();
-                    setUserData(userData)
-                });
-
+                const userDocument = useUserDocument(user)
+                setUserDocument(userDocument)
             } else {
                 setUser(null);
             }
@@ -98,7 +94,7 @@ const NavBar: FC<NavBarProps> = () => {
                                 </div>
                             }
                             <button onFocus={handleFocus} onClick={handleToggleMenu} className='px-5 py-3 bg-bg-color rounded-2xl flex flex-row justify-between items-center text-text-color transition-all hover:bg-accent-color gap-3'>
-                                <img src={userData?.avatar} className='w-4 h-4' />
+                                {/* <img src={userDocument?.avatar} className='w-4 h-4' /> */}
                                 <ChevronDownIcon className='w-4 h-4' />
                             </button>
                         </div>
