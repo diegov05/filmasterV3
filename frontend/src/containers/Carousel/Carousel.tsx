@@ -1,14 +1,15 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { Movie } from '../../interfaces/interfaces';
+import { User } from '../../models/user';
 import { key, requests } from '../../tmdbRequests';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Loading, MovieCard, MoviePoster, FilterButton } from '../../components';
-import { User, onAuthStateChanged } from 'firebase/auth';
-import { auth, db } from '../../firebase';
-import { collection, doc, onSnapshot } from 'firebase/firestore';
+import { User as FirestoreUser, onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../firebase';
 import images from "../../assets";
 import "./Carousel.css";
 import axios from 'axios';
+import { useUserDocument } from '../../hooks/useUserDocument';
 
 interface CarouselProps {
     content: string;
@@ -18,7 +19,8 @@ const Carousel: FC<CarouselProps> = (props) => {
     const [shows, setShows] = useState<Movie[]>([]);
     const [showLeftButton, setShowLeftButton] = useState<boolean>(false);
     const [userFavoriteMovies, setUserFavoriteMovies] = useState<Movie[]>([])
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<FirestoreUser | null>(null);
+    const [userDocument, setUserDocument] = useState<User | null>(null);
     const [index, setIndex] = useState<number>(0)
 
     const content = props.content;
@@ -98,8 +100,32 @@ const Carousel: FC<CarouselProps> = (props) => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
-                setUser(user);
-                const userId = user.uid;
+                setUser(user)
+                const userDocument = useUserDocument(user)
+
+                if (!userDocument) {
+                    return
+                }
+
+                const userFavoritesData = userDocument.favorites
+                const stringIds: string[] = [];
+                const movieArr: { id: string, mediaType: string }[] = [];
+
+                userFavoritesData.forEach((movie) => {
+                    stringIds.push(movie.replace(/\D+/g, ''))
+                    const mediaType = movie.replace(/^[\s\d]+/, '')
+                    movieArr.push({ id: movie.replace(/\D+/g, ''), mediaType: mediaType })
+                })
+                const fetchMovies = async () => {
+                    const moviePromises = movieArr.map((movie) =>
+                        axios.get(
+                            `https://api.themoviedb.org/3/${movie.mediaType}/${parseInt(movie.id)}?api_key=${key}&language=en-US`
+                        ));
+                    const movieResponses = await Promise.all(moviePromises);
+                    const movieData = movieResponses.map((response) => response.data);
+                    setUserFavoriteMovies(movieData);
+                };
+                fetchMovies();
             } else {
                 setUser(null);
             }
