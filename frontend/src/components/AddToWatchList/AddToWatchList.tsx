@@ -2,9 +2,10 @@ import { FC, useEffect, useState } from 'react'
 import { BookmarkIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 import { Movie } from '../../interfaces/interfaces'
 import { arrayRemove, arrayUnion, collection, doc, onSnapshot, updateDoc } from 'firebase/firestore'
-import { db, auth } from '../../firebase'
+import { auth } from '../../firebase'
 import { User, onAuthStateChanged } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
+import { useUserDocument } from '../../hooks/useUserDocument'
 
 interface AddToWatchListProps {
     movie: Movie
@@ -23,19 +24,11 @@ const AddToWatchList: FC<AddToWatchListProps> = (props) => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
                 setUser(user);
-                const userId = user.uid;
-                const userFavoritesRef = doc(
-                    collection(db, "users"),
-                    userId
-                );
-
                 if (!user) {
                     return
                 } else {
-                    onSnapshot(userFavoritesRef, (snapshot) => {
-                        const userFavoritesData = snapshot.data();
-                        setUserFavorites(userFavoritesData!.favorites);
-                    });
+                    const userDocument = useUserDocument(user)
+                    setUserFavorites(userDocument?.favorites)
                 }
             } else {
                 setUser(null);
@@ -46,21 +39,21 @@ const AddToWatchList: FC<AddToWatchListProps> = (props) => {
 
     const addToFavorites = (movieId: string, mediaType: string) => {
 
-        const userFavoritesRef = doc(collection(db, 'users'), user?.uid);
+        // const userFavoritesRef = doc(collection(db, 'users'), user?.uid);
 
-        if (!userFavorites) {
-            return <div>Favorites not fetched.</div>
-        }
+        // if (!userFavorites) {
+        //     return <div>Favorites not fetched.</div>
+        // }
 
-        if (userFavorites.includes(`${movieId} ${mediaType}`)) {
-            updateDoc(userFavoritesRef, {
-                favorites: arrayRemove(`${movieId} ${mediaType}`),
-            });
-        } else {
-            updateDoc(userFavoritesRef, {
-                favorites: arrayUnion(`${movieId} ${mediaType}`),
-            });
-        }
+        // if (userFavorites.includes(`${movieId} ${mediaType}`)) {
+        //     updateDoc(userFavoritesRef, {
+        //         favorites: arrayRemove(`${movieId} ${mediaType}`),
+        //     });
+        // } else {
+        //     updateDoc(userFavoritesRef, {
+        //         favorites: arrayUnion(`${movieId} ${mediaType}`),
+        //     });
+        // }
     }
 
     if (!userFavorites) {
