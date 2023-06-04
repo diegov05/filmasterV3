@@ -1,16 +1,17 @@
 import { FC, useContext, useEffect, useState } from 'react';
 import { Movie } from '../../interfaces/interfaces';
+import { User } from '../../models/user';
 import { key } from '../../tmdbRequests';
-import axios from "axios";
 import { AddToWatchList, Loading, NavBar, SearchBar } from '../../components';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/20/solid';
 import { VideoCameraIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
-import images from "../../assets";
 import { AuthContext } from '../../contexts/AuthContext';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth, db } from '../../firebase';
-import { DocumentData, collection, doc, onSnapshot } from 'firebase/firestore';
+import { auth } from '../../firebase';
+import images from "../../assets";
+import axios from "axios";
+import { useUserDocument } from '../../hooks/useUserDocument';
 
 interface HeaderProps {
     handleMenuToggle: () => void
@@ -23,7 +24,8 @@ const Header: FC<HeaderProps> = (props) => {
     const [isMenuToggled, setIsMenuToggled] = useState<boolean>(false);
     const [isSearchToggled, setIsSearchToggled] = useState<boolean>(false);
     const [isSearching, setIsSearching] = useState<boolean>(false);
-    const [userData, setUserData] = useState<DocumentData | undefined>();
+    const [userDocument, setUserDocument] = useState<User | null>(null);
+
 
     const user = useContext(AuthContext)
     const navigate = useNavigate()
@@ -57,13 +59,8 @@ const Header: FC<HeaderProps> = (props) => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
-                const userRef = doc(collection(db, 'users'), user.uid);
-
-                onSnapshot(userRef, (snapshot) => {
-                    const userData = snapshot.data();
-                    setUserData(userData)
-                });
-
+                const userDocument = useUserDocument(user)
+                setUserDocument(userDocument)
             } else {
             }
         });
@@ -131,13 +128,13 @@ const Header: FC<HeaderProps> = (props) => {
                                     navigate('/login')
                                 }} className='w-full'>
                                     <div className='flex flex-row justify-start items-center gap-2'>
-                                        <img className='w-10 h-10 pb-4' src={userData?.avatar} alt={userData?.email} />
+                                        {/* <img className='w-10 h-10 pb-4' src={userDocument?.avatar} alt={userDocument?.username} /> */}
                                         <h1 className='w-max font-bold text-xl pb-4 text-bg-color'>Sign Out</h1>
                                     </div>
                                     <div className='h-0.5 bg-zinc-700' />
                                 </button>
                                 <div className='w-max'>
-                                    <h1 className='w-[25ch] xs:max-4xl:w-max font-light text-base pb-4 text-zinc-500'>Logged In As: {user.email}</h1>
+                                    <h1 className='w-[25ch] xs:max-4xl:w-max font-light text-base pb-4 text-zinc-500'>Logged In As: {userDocument?.username}</h1>
                                     <div className='h-0.5 bg-zinc-700' />
                                 </div>
                             </>
