@@ -1,8 +1,6 @@
 import { FC, useState } from 'react'
 import { Movie, Review } from '../../interfaces/interfaces'
-import { User } from 'firebase/auth'
-import { collection, doc, setDoc } from 'firebase/firestore'
-import { db } from '../../firebase'
+import { User as FirestoreUser } from 'firebase/auth'
 import { StarIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 interface EditingBoxProps {
@@ -15,37 +13,34 @@ const EditingBox: FC<EditingBoxProps> = (props) => {
     const currentDate = new Date().toJSON().slice(0, 10);
 
     const { movie, handleToggleEditing, review } = props
-    const mediaType = movie.title ? "movie" : "tv"
-
-    const reviewsCollectionRef = collection(db, 'reviews')
 
     const [rating, setRating] = useState(review.reviewRating);
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<FirestoreUser | null>(null);
 
     const handleReviewEdit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+        // e.preventDefault();
 
-        const form = e.target as HTMLFormElement;
-        const reviewContent = form.reviewContent.value;
-        const reviewRating = rating;
+        // const form = e.target as HTMLFormElement;
+        // const reviewContent = form.reviewContent.value;
+        // const reviewRating = rating;
 
-        const updatedReview = {
-            ...review,
-            reviewContent,
-            reviewRating,
-        };
+        // const updatedReview = {
+        //     ...review,
+        //     reviewContent,
+        //     reviewRating,
+        // };
 
-        try {
-            await setDoc(doc(reviewsCollectionRef, updatedReview.reviewId), updatedReview);
-            console.log('Review updated in Firestore successfully!');
-            setRating(0);
-            window.location.reload();
-        } catch (error) {
-            console.error('Error updating review in Firestore:', error);
-        }
+        // try {
+        //     await setDoc(doc(reviewsCollectionRef, updatedReview.reviewId), updatedReview);
+        //     console.log('Review updated in Firestore successfully!');
+        //     setRating(0);
+        //     window.location.reload();
+        // } catch (error) {
+        //     console.error('Error updating review in Firestore:', error);
+        // }
 
-        form.reviewContent.value = '';
-        form.reviewRating.value = '';
+        // form.reviewContent.value = '';
+        // form.reviewRating.value = '';
     };
 
     const handleStarClick = (selectedRating: number) => {

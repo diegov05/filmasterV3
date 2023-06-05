@@ -6,9 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import images from "../../assets";
 import { AuthContext } from '../../contexts/AuthContext';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth, db } from '../../firebase';
+import { auth } from '../../firebase';
 import { DocumentData, collection, doc, onSnapshot } from 'firebase/firestore';
 import { VideoCameraIcon } from '@heroicons/react/24/outline';
+import { User } from '../../models/user';
+import { useUserDocument } from '../../hooks/useUserDocument';
 
 
 interface MovieHeaderProps {
@@ -24,7 +26,7 @@ const MovieHeader: FC<MovieHeaderProps> = (props) => {
     const [isSearchToggled, setIsSearchToggled] = useState<boolean>(false);
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [isWatchProvidersVisible, setIsWatchProvidersVisible] = useState<boolean>(false);
-    const [userData, setUserData] = useState<DocumentData | undefined>();
+    const [userDocument, setUserDocument] = useState<User | null>(null);
 
     const user = useContext(AuthContext)
     const navigate = useNavigate()
@@ -74,13 +76,8 @@ const MovieHeader: FC<MovieHeaderProps> = (props) => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
-                const userRef = doc(collection(db, 'users'), user.uid);
-
-                onSnapshot(userRef, (snapshot) => {
-                    const userData = snapshot.data();
-                    setUserData(userData)
-                });
-
+                const userDocument = useUserDocument(user)
+                setUserDocument(userDocument)
             } else {
             }
         });
@@ -149,7 +146,7 @@ const MovieHeader: FC<MovieHeaderProps> = (props) => {
                                         navigate('/login')
                                     }} className='w-full'>
                                         <div className='flex flex-row justify-start items-center gap-2'>
-                                            <img className='w-10 h-10 pb-4' src={userData?.avatar} alt={userData?.email} />
+                                            <img className='w-10 h-10 pb-4' src={userDocument?.avatar} alt={userDocument?.username} />
                                             <h1 className='w-max font-bold text-xl pb-4 text-bg-color'>Sign Out</h1>
                                         </div>
                                         <div className='h-0.5 bg-zinc-700' />

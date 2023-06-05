@@ -1,11 +1,10 @@
 import { FC, useEffect, useState } from 'react';
 import { Movie } from '../../interfaces/interfaces';
 import { Review } from '../../components';
-import { db } from '../../firebase';
-import { collection, getDocs } from 'firebase/firestore';
-import { User, onAuthStateChanged } from 'firebase/auth';
+import { User as FirestoreUser, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
+import { Review as ReviewModel } from '../../models/review';
 
 interface ReviewsProps {
     movie: Movie
@@ -14,90 +13,78 @@ interface ReviewsProps {
     handleReviewChange: (review: Review) => void
 }
 
-type review = {
-    reviewId: string
-    userId: string
-    userName: string | null
-    date: string
-    movieId: string
-    mediaType: string
-    reviewContent: string;
-    reviewRating: number;
-}
 
 const Reviews: FC<ReviewsProps> = (props) => {
 
     const { movie, handleToggleReviewing, handleToggleEditing } = props
-    const mediaType = movie.title ? "movie" : "tv"
     const navigate = useNavigate()
 
-    const [user, setUser] = useState<User | null>(null);
-    const [localReviews, setLocalReviews] = useState<review[] | null | undefined>(null);
-    const [currentUserReview, setCurrentUserReview] = useState<review | null>(null);
+    const [user, setUser] = useState<FirestoreUser | null>(null);
+    const [localReviews, setLocalReviews] = useState<ReviewModel[] | null>(null);
+    const [currentUserReview, setCurrentUserReview] = useState<ReviewModel | null>(null);
 
-    const reviewsCollectionRef = collection(db, 'reviews')
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
                 setUser(user);
                 const fetchReviewsData = async () => {
-                    try {
-                        const querySnapshot = await getDocs(reviewsCollectionRef);
-                        const fetchedReviews: review[] = [];
+                    //     try {
+                    //         const querySnapshot = await getDocs(reviewsCollectionRef);
+                    //         const fetchedReviews: review[] = [];
 
-                        querySnapshot.forEach((doc) => {
-                            const reviewData = doc.data() as review;
-                            fetchedReviews.push(reviewData);
-                        });
+                    //         querySnapshot.forEach((doc) => {
+                    //             const reviewData = doc.data() as review;
+                    //             fetchedReviews.push(reviewData);
+                    //         });
 
 
-                        const filteredReviews = fetchedReviews.filter(
-                            (review) =>
-                                review.movieId === movie.id.toString() &&
-                                review.mediaType === mediaType
-                        );
+                    //         const filteredReviews = fetchedReviews.filter(
+                    //             (review) =>
+                    //                 review.movieId === movie.id.toString() &&
+                    //                 review.mediaType === mediaType
+                    //         );
 
-                        const sortedReviews = filteredReviews.sort(
-                            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-                        );
+                    //         const sortedReviews = filteredReviews.sort(
+                    //             (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+                    //         );
 
-                        setLocalReviews(sortedReviews);
+                    //         setLocalReviews(sortedReviews);
 
-                        const currentUserReview = sortedReviews.find(
-                            (review) => review.userId === user.uid
-                        );
-                        setCurrentUserReview(currentUserReview || null);
-                    } catch (error) {
-                        console.error("Error fetching reviews data:", error);
-                    }
+                    //         const currentUserReview = sortedReviews.find(
+                    //             (review) => review.userId === user.uid
+                    //         );
+                    //         setCurrentUserReview(currentUserReview || null);
+                    //     } catch (error) {
+                    //         console.error("Error fetching reviews data:", error);
+                    //     }
                 };
 
                 fetchReviewsData();
             } else {
                 setUser(null);
                 const fetchReviewsData = async () => {
-                    try {
-                        const querySnapshot = await getDocs(reviewsCollectionRef);
-                        const fetchedReviews: review[] = [];
+                    // try {
+                    //     const querySnapshot = await getDocs(reviewsCollectionRef);
+                    //     const fetchedReviews: review[] = [];
 
 
-                        querySnapshot.forEach((doc) => {
-                            const reviewData = doc.data() as review;
-                            fetchedReviews.push(reviewData);
-                        });
-                        const filteredReviews = fetchedReviews.filter(
-                            (review) =>
-                                review.movieId === movie.id.toString() &&
-                                review.mediaType === mediaType
-                        );
-                        const sortedReviews = filteredReviews.sort(
-                            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-                        );
-                        setLocalReviews(sortedReviews);
-                    } catch (error) {
-                        console.error("Error fetching reviews data:", error);
-                    }
+                    //     querySnapshot.forEach((doc) => {
+                    //         const reviewData = doc.data() as review;
+                    //         fetchedReviews.push(reviewData);
+                    //     });
+                    //     const filteredReviews = fetchedReviews.filter(
+                    //         (review) =>
+                    //             review.movieId === movie.id.toString() &&
+                    //             review.mediaType === mediaType
+                    //     );
+                    //     const sortedReviews = filteredReviews.sort(
+                    //         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+                    //     );
+                    //     setLocalReviews(sortedReviews);
+                    // } catch (error) {
+                    //     console.error("Error fetching reviews data:", error);
+                    // }
                 }
                 fetchReviewsData()
             }
@@ -113,10 +100,7 @@ const Reviews: FC<ReviewsProps> = (props) => {
             </div>
             <div className='flex flex-col pt-6 gap-12 justify-start items-start'>
                 {localReviews?.map((review) => (
-                    <Review key={review.reviewId} review={review} isEditable={review.reviewId === currentUserReview?.reviewId ? true : false} handleToggleEditing={handleToggleEditing} />
-                ))}
-                {movie.reviews?.results.map((review) => (
-                    <Review key={review.id} review={review} />
+                    <Review key={review._id} review={review} isEditable={review._id === currentUserReview?._id ? true : false} handleToggleEditing={handleToggleEditing} />
                 ))}
             </div>
             {!currentUserReview && <button onClick={user ? handleToggleReviewing : () => navigate('/login')} className='w-max flex flex-row gap-2 justify-center items-center px-5 py-3 bg-button-primary-color text-bg-color rounded-2xl font-bold text-xs sm:max-4xl:text-lg transition-all hover:bg-accent-color hover:text-text-color'>

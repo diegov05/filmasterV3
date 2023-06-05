@@ -1,7 +1,6 @@
 import React, { FC, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { auth, db } from '../../firebase'
-import { doc, setDoc } from 'firebase/firestore'
+import { auth } from '../../firebase'
 import { Loading, Notification } from '../../components'
 import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth'
 import images from '../../assets'
@@ -47,13 +46,7 @@ const Register: FC<RegisterProps> = () => {
 
                 const { user } = await createUserWithEmailAndPassword(auth, email, password);
 
-                const userRef = doc(db, 'users', user.uid)
-                await setDoc(userRef, {
-                    id: user.uid,
-                    email: user.email,
-                    avatar: `https://source.boringavatars.com/beam/120/${user.uid}%20${user.email}?colors=F6F6F6,290521,FFD600,7216F4,FFFFFF`,
-                    favorites: []
-                })
+
 
                 setTimeout(() => {
                     navigate('/')
