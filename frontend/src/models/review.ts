@@ -1,6 +1,7 @@
 import { User } from "./user";
 
 export interface Review {
+    _id: string
     author: User
     content: string
     rating: number
