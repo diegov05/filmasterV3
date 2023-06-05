@@ -131,7 +131,7 @@ const Review: FC<ReviewProps> = (props) => {
     return (
         <div className='flex flex-col gap-4 justify-start items-start'>
             <div className='flex flex-row gap-2 justify-start items-center'>
-                {/* <img className='w-4 h-4 rounded-full' src={review.avatar} alt={review.author.username} /> */}
+                <img className='w-4 h-4 rounded-full' src={review.author.avatar} alt={review.author.username} />
                 <p className='font-bold'>{review.author.username}</p>
                 <span className="text-gradient">
                     <svg xmlns="http://www.w3.org/2000/svg" fill='none' viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4 sm:max-4xl:w-6 sm:max-4xl:h-6">
@@ -177,7 +177,7 @@ const Review: FC<ReviewProps> = (props) => {
             </div>
             {
                 isReplying && <div className='flex flew-row justify-start items-center gap-2'>
-                    {/* <img className='w-6 h-6 md:max-4xl:w-10 md:max-4xl:h-10' src={userDocument?.avatar} alt="" /> */}
+                    <img className='w-6 h-6 md:max-4xl:w-10 md:max-4xl:h-10' src={userDocument?.avatar} alt={userDocument?.username} />
                     <div className='flex flex-row gap-2'>
                         <input type="text" className='px-5 py-2 md:max-4xl:py-3 rounded-2xl bg-zinc-300 border-b focus:outline-none text-xs' placeholder='Write a reply...'
                             value={replyContent}

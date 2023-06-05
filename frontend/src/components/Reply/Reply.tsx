@@ -50,7 +50,7 @@ const Reply: FC<ReplyProps> = (props) => {
     return (
         <div className='ml-16 slide-in-fwd-center flex flex-col gap-4 justify-start items-start'>
             <div className='flex flex-row gap-2 justify-start items-center'>
-                <img className='w-4 h-4 rounded-full' src={`reply.avatar`} alt={reply.author.username!} />
+                <img className='w-4 h-4 rounded-full' src={reply.author.avatar} alt={reply.author.username!} />
                 <p className='font-bold text-sm'>{reply.author.username}</p>
             </div>
             <div>
