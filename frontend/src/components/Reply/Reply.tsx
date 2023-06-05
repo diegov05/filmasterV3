@@ -1,12 +1,11 @@
 import { HandThumbDownIcon, HandThumbUpIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { DocumentData, collection, deleteDoc, doc } from 'firebase/firestore';
 import { FC, useState } from 'react'
-import { db } from '../../firebase';
+import { Reply } from '../../models/reply';
 
 interface ReplyProps {
-    reply: DocumentData
+    reply: Reply
     isEditable: boolean
-    handleToggleEditing?: (reply: DocumentData) => void
+    handleToggleEditing?: (reply: Reply) => void
 }
 
 const Reply: FC<ReplyProps> = (props) => {
@@ -38,21 +37,21 @@ const Reply: FC<ReplyProps> = (props) => {
     }
 
     const handleDeleteReply = async () => {
-        try {
-            const repliesCollectionRef = collection(db, 'replies');
-            await deleteDoc(doc(repliesCollectionRef, reply.replyId));
-            console.log('Reply deleted from Firestore successfully!');
-            window.location.reload();
-        } catch (error) {
-            console.error('Error deleting reply from Firestore:', error);
-        }
+        // try {
+        //     const repliesCollectionRef = collection(db, 'replies');
+        //     await deleteDoc(doc(repliesCollectionRef, reply.replyId));
+        //     console.log('Reply deleted from Firestore successfully!');
+        //     window.location.reload();
+        // } catch (error) {
+        //     console.error('Error deleting reply from Firestore:', error);
+        // }
     };
 
     return (
         <div className='ml-16 slide-in-fwd-center flex flex-col gap-4 justify-start items-start'>
             <div className='flex flex-row gap-2 justify-start items-center'>
-                <img className='w-4 h-4 rounded-full' src={reply.avatar} alt={reply.userName!} />
-                <p className='font-bold text-sm'>{reply.replyAuthorName}</p>
+                <img className='w-4 h-4 rounded-full' src={`reply.avatar`} alt={reply.author.username!} />
+                <p className='font-bold text-sm'>{reply.author.username}</p>
             </div>
             <div>
                 <p className='text-xs md:max-4xl:text-sm md:max-4xl:w-[80ch]'>{reply.content}</p>
