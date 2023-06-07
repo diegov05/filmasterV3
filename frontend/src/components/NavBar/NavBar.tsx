@@ -7,6 +7,8 @@ import { User as FirestoreUser, onAuthStateChanged, signOut } from 'firebase/aut
 import { auth } from '../../firebase'
 import { User } from '../../models/user'
 import { fetchUser } from '../../api/user_api'
+import { Loading } from '..'
+import Lottie from 'lottie-react'
 
 interface NavBarProps {
 
@@ -94,7 +96,7 @@ const NavBar: FC<NavBarProps> = () => {
                                 </div>
                             }
                             <button onFocus={handleFocus} onClick={handleToggleMenu} className='px-5 py-3 bg-bg-color rounded-2xl flex flex-row justify-between items-center text-text-color transition-all hover:bg-accent-color gap-3'>
-                                <img src={userDocument?.avatar} className='w-4 h-4' />
+                                {userDocument ? <img src={userDocument?.avatar} className='w-4 h-4' /> : <Lottie animationData={images.loading} className='w-4' />}
                                 <ChevronDownIcon className='w-4 h-4' />
                             </button>
                         </div>

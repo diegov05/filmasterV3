@@ -129,7 +129,7 @@ const Header: FC<HeaderProps> = (props) => {
                                     navigate('/login')
                                 }} className='w-full'>
                                     <div className='flex flex-row justify-start items-center gap-2'>
-                                        {/* <img className='w-10 h-10 pb-4' src={userDocument?.avatar} alt={userDocument?.username} /> */}
+                                        <img className='w-10 h-10 pb-4' src={userDocument?.avatar} alt={userDocument?.username} />
                                         <h1 className='w-max font-bold text-xl pb-4 text-bg-color'>Sign Out</h1>
                                     </div>
                                     <div className='h-0.5 bg-zinc-700' />
