@@ -6,7 +6,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { User as FirestoreUser, onAuthStateChanged, signOut } from 'firebase/auth'
 import { auth } from '../../firebase'
 import { User } from '../../models/user'
-import { useUserDocument } from '../../hooks/useUserDocument'
+import { fetchUser } from '../../api/user_api'
 
 interface NavBarProps {
 
@@ -58,10 +58,10 @@ const NavBar: FC<NavBarProps> = () => {
     }
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 setUser(user);
-                const userDocument = useUserDocument(user)
+                const userDocument = await fetchUser(user.uid)
                 setUserDocument(userDocument)
             } else {
                 setUser(null);
@@ -94,7 +94,7 @@ const NavBar: FC<NavBarProps> = () => {
                                 </div>
                             }
                             <button onFocus={handleFocus} onClick={handleToggleMenu} className='px-5 py-3 bg-bg-color rounded-2xl flex flex-row justify-between items-center text-text-color transition-all hover:bg-accent-color gap-3'>
-                                {/* <img src={userDocument?.avatar} className='w-4 h-4' /> */}
+                                <img src={userDocument?.avatar} className='w-4 h-4' />
                                 <ChevronDownIcon className='w-4 h-4' />
                             </button>
                         </div>

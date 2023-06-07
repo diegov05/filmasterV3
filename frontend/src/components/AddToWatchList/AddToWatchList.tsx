@@ -6,6 +6,7 @@ import { auth } from '../../firebase'
 import { User, onAuthStateChanged } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
 import { useUserDocument } from '../../hooks/useUserDocument'
+import { fetchUser } from '../../api/user_api'
 
 interface AddToWatchListProps {
     movie: Movie
@@ -21,13 +22,13 @@ const AddToWatchList: FC<AddToWatchListProps> = (props) => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 setUser(user);
                 if (!user) {
                     return
                 } else {
-                    const userDocument = useUserDocument(user)
+                    const userDocument = await fetchUser(user.uid)
                     setUserFavorites(userDocument?.favorites)
                 }
             } else {

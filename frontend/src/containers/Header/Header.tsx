@@ -12,6 +12,7 @@ import { auth } from '../../firebase';
 import images from "../../assets";
 import axios from "axios";
 import { useUserDocument } from '../../hooks/useUserDocument';
+import { fetchUser } from '../../api/user_api';
 
 interface HeaderProps {
     handleMenuToggle: () => void
@@ -57,9 +58,9 @@ const Header: FC<HeaderProps> = (props) => {
     }, []);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userDocument = useUserDocument(user)
+                const userDocument = await fetchUser(user.uid)
                 setUserDocument(userDocument)
             } else {
             }

@@ -10,6 +10,7 @@ import images from "../../assets";
 import "./Carousel.css";
 import axios from 'axios';
 import { useUserDocument } from '../../hooks/useUserDocument';
+import { fetchUser } from '../../api/user_api';
 
 interface CarouselProps {
     content: string;
@@ -98,10 +99,10 @@ const Carousel: FC<CarouselProps> = (props) => {
     }, []);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 setUser(user)
-                const userDocument = useUserDocument(user)
+                const userDocument = await fetchUser(user.uid)
 
                 if (!userDocument) {
                     return
