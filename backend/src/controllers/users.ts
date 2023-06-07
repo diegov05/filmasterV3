@@ -35,24 +35,45 @@ export const getUser: RequestHandler = async (req, res, next) => {
 }
 
 interface CreateUserBody {
+    email?: string
+    firebaseId?: string
     username?: string
     password?: string
 }
 
 export const createUser: RequestHandler<unknown, unknown, CreateUserBody, unknown> = async (req, res, next) => {
 
+    const email = req.body.email
+    const firebaseId = req.body.firebaseId
     const username = req.body.username
     const password = req.body.password
 
     try {
 
+        if (!email) {
+            throw createHttpError(400, "User must have an email.")
+        }
         if (!username) {
             throw createHttpError(400, "User must have a username.")
         }
+        if (!firebaseId) {
+            throw createHttpError(400, "User must have a valid id.")
+        }
+        if (!password) {
+            throw createHttpError(400, "User must have a password.")
+        }
+
+        const existingUser = await UserModel.findOne({ username }).exec();
+        if (existingUser) {
+            throw createHttpError(409, "Username already exists.");
+        }
 
         const newUser = await UserModel.create({
-            userName: username,
+            email: email,
+            firebaseId: firebaseId,
+            username: username,
             password: password,
+            avatar: `https://source.boringavatars.com/beam/120/${username}%20${email}?colors=F6F6F6,290521,FFD600,7216F4,FFFFFF`
         })
 
         res.status(201).json(newUser)
@@ -66,6 +87,7 @@ interface UpdateUserParams {
 }
 
 interface UpdateUserBody {
+    email?: string,
     username?: string,
     password?: string
 }
@@ -73,6 +95,7 @@ interface UpdateUserBody {
 export const updateUser: RequestHandler<UpdateUserParams, unknown, UpdateUserBody, unknown> = async (req, res, next) => {
 
     const userId = req.params.userId
+    const newEmail = req.body.email
     const newUsername = req.body.username
     const newPassword = req.body.password
 
@@ -81,6 +104,9 @@ export const updateUser: RequestHandler<UpdateUserParams, unknown, UpdateUserBod
             throw createHttpError(400, "Invalid user id.")
         }
 
+        if (!newEmail) {
+            throw createHttpError(400, "User must have an email.")
+        }
         if (!newUsername) {
             throw createHttpError(400, "User must have a username.")
         }
@@ -95,7 +121,7 @@ export const updateUser: RequestHandler<UpdateUserParams, unknown, UpdateUserBod
             throw createHttpError(404, "User not found.")
         }
 
-        user.userName = newUsername
+        user.username = newUsername
         user.password = newPassword
 
         const updatedUser = await user.save()

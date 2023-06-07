@@ -1,8 +1,11 @@
 import { InferSchemaType, Schema, model } from "mongoose";
 
 const userSchema = new Schema({
-    userName: { type: String, required: true },
+    username: { type: String, required: true },
+    firebaseId: { type: String, required: true },
+    email: { type: String, required: true },
     password: { type: String, required: true },
+    avatar: { type: String, required: true },
     favorites: { type: [String] },
     watchList: { type: [String] },
 }, { timestamps: true })
