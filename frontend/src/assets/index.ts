@@ -6,6 +6,7 @@ import topography from './topography.svg'
 import gradient from './purple-golden-gradient.png'
 import footerImage from './footerImage.png'
 import userPicker from "./user-pickerjson.json"
+import loading from "./loading.json"
 
 export default {
     logoBlack,
@@ -15,5 +16,6 @@ export default {
     topography,
     gradient,
     footerImage,
-    userPicker
+    userPicker,
+    loading
 }
