@@ -1,4 +1,3 @@
-import { User as FirestoreUser } from 'firebase/auth';
 import { User } from '../models/user';
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
@@ -17,12 +16,24 @@ export async function fetchUsers(): Promise<User[]> {
     return response.json();
 }
 
-export async function fetchUser(firestoreUser: FirestoreUser): Promise<User> {
-    const response = await fetchData(`api/users/${firestoreUser}`, { method: "GET" })
-    return response.json();
+export async function fetchUser(firebaseId: string): Promise<User> {
+    const users = await fetchUsers();
+    const filteredUser = users.find((user: User) => user.firebaseId === firebaseId);
+    const response = await fetchData(`/api/users/${filteredUser?._id}`)
+
+    if (response.ok) {
+        return response.json()
+    }
+    else {
+        const errorBody = await response.json();
+        const errorMessage = errorBody.error
+        throw Error(errorMessage)
+    }
 }
 
 export interface UserInput {
+    email: string
+    firebaseId: string
     username: string
     password: string
 }
@@ -38,3 +49,5 @@ export async function createUser(user: UserInput): Promise<User> {
         });
     return response.json()
 }
+
+
