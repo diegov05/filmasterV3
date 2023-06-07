@@ -5,6 +5,7 @@ import logoPurpleIcon from "./logo/logo_img_purple.png"
 import topography from './topography.svg'
 import gradient from './purple-golden-gradient.png'
 import footerImage from './footerImage.png'
+import userPicker from "./user-pickerjson.json"
 
 export default {
     logoBlack,
@@ -13,5 +14,6 @@ export default {
     logoPurpleIcon,
     topography,
     gradient,
-    footerImage
+    footerImage,
+    userPicker
 }
