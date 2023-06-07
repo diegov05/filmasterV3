@@ -18,6 +18,7 @@ specifiers:
   firebase: ^9.22.1
   http-proxy-middleware: ^2.0.6
   localforage: ^1.10.0
+  lottie-react: ^2.4.0
   match-sorter: ^6.3.1
   postcss: ^8.4.23
   react: ^18.2.0
@@ -37,6 +38,7 @@ dependencies:
   boring-avatars: 1.7.0
   firebase: 9.22.1
   localforage: 1.10.0
+  lottie-react: 2.4.0_biqbaboplfbrettd7655fr4n2y
   match-sorter: 6.3.1
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
@@ -2093,6 +2095,21 @@ packages:
     hasBin: true
     dependencies:
       js-tokens: 4.0.0
+    dev: false
+
+  /lottie-react/2.4.0_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-pDJGj+AQlnlyHvOHFK7vLdsDcvbuqvwPZdMlJ360wrzGFurXeKPr8SiRCjLf3LrNYKANQtSsh5dz9UYQHuqx4w==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      lottie-web: 5.12.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+
+  /lottie-web/5.12.0:
+    resolution: {integrity: sha512-tt2oiv0EmXC8J/RF877dVCo93vZBBnww+SO6dldREgHD8EsP97jQ42JRryIRfY+6aVESQsHYNEAYgH25cBFy7A==}
     dev: false
 
   /lru-cache/6.0.0:
