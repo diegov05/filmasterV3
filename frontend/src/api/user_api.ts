@@ -50,4 +50,25 @@ export async function createUser(user: UserInput): Promise<User> {
     return response.json()
 }
 
+export interface UpdateUserInput {
+    firebaseId: string
+    email?: string
+    username?: string
+    password?: string
+    favorites?: string[]
+    watchList?: string[]
+}
+
+export async function updateUser(user: UpdateUserInput): Promise<User> {
+    const userDocument = await fetchUser(user.firebaseId)
+    const response = await fetchData(`/api/users/${userDocument._id}`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
+        });
+    return response.json()
+}
 
