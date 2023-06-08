@@ -11,7 +11,6 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
 import images from "../../assets";
 import axios from "axios";
-import { useUserDocument } from '../../hooks/useUserDocument';
 import { fetchUser } from '../../api/user_api';
 
 interface HeaderProps {
