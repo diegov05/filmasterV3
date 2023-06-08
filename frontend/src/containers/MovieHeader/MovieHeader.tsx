@@ -151,7 +151,7 @@ const MovieHeader: FC<MovieHeaderProps> = (props) => {
                                         <div className='h-0.5 bg-zinc-700' />
                                     </button>
                                     <div className='w-max'>
-                                        <h1 className='w-[25ch] xs:max-4xl:w-max font-light text-base pb-4 text-zinc-500'>Logged In As: {user.email}</h1>
+                                        <h1 className='w-[25ch] xs:max-4xl:w-max font-light text-base pb-4 text-zinc-500'>Logged In As: {userDocument?.username}</h1>
                                         <div className='h-0.5 bg-zinc-700' />
                                     </div>
                                 </>
