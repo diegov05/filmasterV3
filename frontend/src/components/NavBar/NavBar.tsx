@@ -7,7 +7,6 @@ import { User as FirestoreUser, onAuthStateChanged, signOut } from 'firebase/aut
 import { auth } from '../../firebase'
 import { User } from '../../models/user'
 import { fetchUser } from '../../api/user_api'
-import { Loading } from '..'
 import Lottie from 'lottie-react'
 
 interface NavBarProps {
