@@ -1,8 +1,8 @@
 import { InferSchemaType, Schema, model } from "mongoose";
-import User from "./user";
+import { userSchema } from "./user"
 
 const reviewSchema = new Schema({
-    author: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    author: { type: userSchema, required: true },
     content: { type: String, required: true },
     rating: { type: Number, required: true },
     showId: { type: String, required: true },
