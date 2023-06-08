@@ -34,8 +34,20 @@ export const getReview: RequestHandler = async (req, res, next) => {
     }
 }
 
+interface User {
+    _id: string,
+    username: string,
+    firebaseId: string,
+    password: string,
+    avatar: string
+    favorites: string[],
+    watchList: string[],
+    createdAt: string,
+    updatedAt: string,
+}
+
 interface CreateReviewBody {
-    author?: string
+    author?: User
     content?: string
     rating?: number
     showId?: string
@@ -46,6 +58,7 @@ interface CreateReviewBody {
 
 export const createReview: RequestHandler<unknown, unknown, CreateReviewBody, unknown> = async (req, res, next) => {
 
+    const reviewAuthor = req.body.author
     const reviewContent = req.body.content
     const reviewRating = req.body.rating
     const showId = req.body.showId
@@ -69,11 +82,13 @@ export const createReview: RequestHandler<unknown, unknown, CreateReviewBody, un
         }
 
         const newReview = await ReviewModel.create({
-            reviewContent: reviewContent,
+            author: reviewAuthor,
+            content: reviewContent,
+            rating: reviewRating,
             showId: showId,
             showType: showType,
-            reviewLikes: reviewLikes,
-            reviewDislikes: reviewDislikes,
+            likes: reviewLikes,
+            dislikes: reviewDislikes,
         })
 
         res.status(201).json(newReview)
