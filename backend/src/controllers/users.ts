@@ -73,7 +73,9 @@ export const createUser: RequestHandler<unknown, unknown, CreateUserBody, unknow
             firebaseId: firebaseId,
             username: username,
             password: password,
-            avatar: `https://source.boringavatars.com/beam/120/${username}%20${email}?colors=F6F6F6,290521,FFD600,7216F4,FFFFFF`
+            avatar: `https://source.boringavatars.com/beam/120/${username}%20${email}?colors=F6F6F6,290521,FFD600,7216F4,FFFFFF`,
+            favorites: [],
+            watchList: []
         })
 
         res.status(201).json(newUser)
@@ -90,6 +92,8 @@ interface UpdateUserBody {
     email?: string,
     username?: string,
     password?: string
+    favorites?: string[] | undefined
+    watchList?: string[] | undefined
 }
 
 export const updateUser: RequestHandler<UpdateUserParams, unknown, UpdateUserBody, unknown> = async (req, res, next) => {
@@ -98,6 +102,8 @@ export const updateUser: RequestHandler<UpdateUserParams, unknown, UpdateUserBod
     const newEmail = req.body.email
     const newUsername = req.body.username
     const newPassword = req.body.password
+    const newFavorites = req.body.favorites
+    const newWatchList = req.body.watchList
 
     try {
         if (!mongoose.isValidObjectId(userId)) {
@@ -121,8 +127,11 @@ export const updateUser: RequestHandler<UpdateUserParams, unknown, UpdateUserBod
             throw createHttpError(404, "User not found.")
         }
 
+        user.email = newEmail
         user.username = newUsername
         user.password = newPassword
+        user.favorites = newFavorites
+        user.watchList = newWatchList
 
         const updatedUser = await user.save()
 
