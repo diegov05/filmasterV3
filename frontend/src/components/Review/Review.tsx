@@ -1,15 +1,15 @@
 import { FC, useEffect, useState } from 'react';
 import { HandThumbDownIcon, HandThumbUpIcon, PencilSquareIcon, TrashIcon, PaperAirplaneIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
-import { DocumentData, collection, deleteDoc, doc, onSnapshot, query, setDoc, where } from 'firebase/firestore';
 import { auth } from '../../firebase';
-import { User as FirestoreUser, onAuthStateChanged } from 'firebase/auth';
+import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { Reply as ReplyModel } from '../../models/reply';
 import { Reply } from '../Reply/Reply';
 import { User } from '../../models/user';
 import { Review } from '../../models/review';
-import { useUserDocument } from '../../hooks/useUserDocument';
-import axios from 'axios';
+import { deleteReview } from '../../api/review_api';
+import { createReply, fetchReplies } from '../../api/reply_api';
+import { fetchUser } from '../../api/user_api';
 
 
 interface ReviewProps {
@@ -20,27 +20,19 @@ interface ReviewProps {
 
 const Review: FC<ReviewProps> = (props) => {
 
-    const colors = ["F6F6F6",
-        "290521",
-        "FFD600",
-        "7216F4",
-        "FFFFFF"
-    ]
-
     const { review, isEditable, handleToggleEditing } = props
-
     const navigate = useNavigate()
 
     const [isLikeSelected, setIsLikeSelected] = useState<boolean>()
     const [isDislikeSelected, setIsDislikeSelected] = useState<boolean>()
     const [isReplying, setIsReplying] = useState<boolean>()
     const [isRepliesShowing, setIsRepliesShowing] = useState<boolean>(false)
-    const [user, setUser] = useState<FirestoreUser | null>(null);
+    const [user, setUser] = useState<FirebaseUser | null>(null);
     const [userDocument, setUserDocument] = useState<User | undefined>();
     const [replyContent, setReplyContent] = useState<string>("");
     const [replies, setReplies] = useState<ReplyModel[]>([])
 
-    const filteredReplies = replies.filter((reply) => reply.author._id === userDocument?._id);
+    const filteredReplies = replies.filter((reply) => reply.parent === review._id);
 
     const handleLikeOrDislike = (index: number) => {
         switch (index) {
@@ -64,49 +56,38 @@ const Review: FC<ReviewProps> = (props) => {
     }
 
     const handleDeleteReview = async () => {
-        // try {
-        //     const reviewsCollectionRef = collection(db, 'reviews');
-        //     await deleteDoc(doc(reviewsCollectionRef, review.reviewId));
-        //     console.log('Review deleted from Firestore successfully!');
-        //     window.location.reload();
-        // } catch (error) {
-        //     console.error('Error deleting review from Firestore:', error);
-        // }
+        try {
+            await deleteReview(review._id)
+            window.location.reload();
+        } catch (error) {
+            console.error('Error deleting review:', error);
+        }
     };
 
     const handleUploadReply = async () => {
-        // try {
-        //     if (!replyContent) return;
+        try {
+            if (!replyContent) return;
 
-        //     const repliesCollectionRef = collection(db, 'replies');
-        //     const newReply = {
-        //         replyId: doc(repliesCollectionRef).id,
-        //         content: replyContent,
-        //         replyAuthorId: user?.uid,
-        //         replyAuthorName: user?.email,
-        //         reviewAuthorName: review.author ? review.author : review.userName,
-        //         reviewId: review.id ? review.id : review.reviewId,
-        //         avatar: userDocument!.avatar
-        //     };
+            await createReply({
+                content: replyContent,
+                parent: review._id,
+                likes: [],
+                dislikes: []
+            })
 
-        //     await setDoc(doc(repliesCollectionRef, newReply.replyId), newReply);
-        //     console.log('Reply uploaded to Firestore successfully!');
-        //     setReplyContent("");
-        // } catch (error) {
-        //     console.error('Error uploading reply to Firestore:', error);
-        // }
+        } catch (error) {
+            console.error('Error uploading reply:', error);
+        }
     };
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 setUser(user);
-                const userDocument = useUserDocument(user)
-
+                const userDocument = await fetchUser(user.uid)
                 if (!userDocument) {
                     return
                 }
-
                 setUserDocument(userDocument)
             } else {
                 setUser(null);
@@ -118,11 +99,10 @@ const Review: FC<ReviewProps> = (props) => {
     useEffect(() => {
         async function loadReplies() {
             try {
-                const response = await axios.get(`/api/replies/`, { method: "GET" })
-                const fetchedReplies = response.data.filter((reply: ReplyModel) => reply.parent === review._id)
-                setReplies(fetchedReplies)
+                const response = await fetchReplies()
+                setReplies(response)
             } catch (error) {
-                console.error("Error fetching user.", error)
+                console.error("Error fetching replies.", error)
             }
         }
         loadReplies()
