@@ -9,7 +9,6 @@ import { auth } from '../../firebase';
 import images from "../../assets";
 import "./Carousel.css";
 import axios from 'axios';
-import { useUserDocument } from '../../hooks/useUserDocument';
 import { fetchUser } from '../../api/user_api';
 
 interface CarouselProps {
@@ -103,10 +102,7 @@ const Carousel: FC<CarouselProps> = (props) => {
             if (user) {
                 setUser(user)
                 const userDocument = await fetchUser(user.uid)
-
-                if (!userDocument) {
-                    return
-                }
+                setUserDocument(userDocument)
 
                 const userFavoritesData = userDocument.favorites
                 const stringIds: string[] = [];
@@ -133,6 +129,7 @@ const Carousel: FC<CarouselProps> = (props) => {
         });
         return () => unsubscribe();
     }, []);
+
 
     if (!shows) {
         return (
