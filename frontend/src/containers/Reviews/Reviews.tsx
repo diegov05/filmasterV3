@@ -5,6 +5,7 @@ import { User as FirestoreUser, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import { Review as ReviewModel } from '../../models/review';
+import { fetchReviews } from '../../api/review_api';
 
 interface ReviewsProps {
     movie: Movie
@@ -17,10 +18,11 @@ interface ReviewsProps {
 const Reviews: FC<ReviewsProps> = (props) => {
 
     const { movie, handleToggleReviewing, handleToggleEditing } = props
+    const mediaType = movie.title ? "movie" : "tv"
     const navigate = useNavigate()
 
     const [user, setUser] = useState<FirestoreUser | null>(null);
-    const [localReviews, setLocalReviews] = useState<ReviewModel[] | null>(null);
+    const [reviews, setReviews] = useState<ReviewModel[] | null>(null);
     const [currentUserReview, setCurrentUserReview] = useState<ReviewModel | null>(null);
 
 
@@ -29,62 +31,53 @@ const Reviews: FC<ReviewsProps> = (props) => {
             if (user) {
                 setUser(user);
                 const fetchReviewsData = async () => {
-                    //     try {
-                    //         const querySnapshot = await getDocs(reviewsCollectionRef);
-                    //         const fetchedReviews: review[] = [];
 
-                    //         querySnapshot.forEach((doc) => {
-                    //             const reviewData = doc.data() as review;
-                    //             fetchedReviews.push(reviewData);
-                    //         });
+                    try {
+                        const fetchedReviews = await fetchReviews()
+                        const filteredReviews = fetchedReviews.filter(
+                            (review) =>
+                                review.showId === movie.id.toString() &&
+                                review.showType === mediaType
+                        );
+
+                        const sortedReviews = filteredReviews.sort(
+                            (a, b) => new Date(b.createdAt === b.updatedAt ? b.createdAt : b.updatedAt).getTime() - new Date(a.createdAt === a.updatedAt ? a.createdAt : a.updatedAt).getTime()
+                        );
+
+                        setReviews(sortedReviews)
+
+                        const currentUserReview = sortedReviews.find(
+                            (review) => review.author.firebaseId === user.uid
+                        );
+
+                        setCurrentUserReview(currentUserReview || null);
 
 
-                    //         const filteredReviews = fetchedReviews.filter(
-                    //             (review) =>
-                    //                 review.movieId === movie.id.toString() &&
-                    //                 review.mediaType === mediaType
-                    //         );
-
-                    //         const sortedReviews = filteredReviews.sort(
-                    //             (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-                    //         );
-
-                    //         setLocalReviews(sortedReviews);
-
-                    //         const currentUserReview = sortedReviews.find(
-                    //             (review) => review.userId === user.uid
-                    //         );
-                    //         setCurrentUserReview(currentUserReview || null);
-                    //     } catch (error) {
-                    //         console.error("Error fetching reviews data:", error);
-                    //     }
+                    } catch (error) {
+                        console.error("Error fetching reviews data:", error);
+                    }
                 };
-
                 fetchReviewsData();
             } else {
                 setUser(null);
                 const fetchReviewsData = async () => {
-                    // try {
-                    //     const querySnapshot = await getDocs(reviewsCollectionRef);
-                    //     const fetchedReviews: review[] = [];
+                    try {
+                        const fetchedReviews = await fetchReviews()
+                        const filteredReviews = fetchedReviews.filter(
+                            (review) =>
+                                review.showId === movie.id.toString() &&
+                                review.showType === mediaType
+                        );
 
+                        const sortedReviews = filteredReviews.sort(
+                            (a, b) => new Date(b.createdAt === b.updatedAt ? b.createdAt : b.updatedAt).getTime() - new Date(a.createdAt === a.updatedAt ? a.createdAt : a.updatedAt).getTime()
+                        );
 
-                    //     querySnapshot.forEach((doc) => {
-                    //         const reviewData = doc.data() as review;
-                    //         fetchedReviews.push(reviewData);
-                    //     });
-                    //     const filteredReviews = fetchedReviews.filter(
-                    //         (review) =>
-                    //             review.movieId === movie.id.toString() &&
-                    //             review.mediaType === mediaType
-                    //     );
-                    //     const sortedReviews = filteredReviews.sort(
-                    //         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-                    //     );
-                    //     setLocalReviews(sortedReviews);
-                    // } catch (error) {
-                    //     console.error("Error fetching reviews data:", error);
-                    // }
+                        setReviews(sortedReviews)
+
+                    } catch (error) {
+                        console.error("Error fetching reviews data:", error);
+                    }
                 }
                 fetchReviewsData()
             }
@@ -99,7 +92,7 @@ const Reviews: FC<ReviewsProps> = (props) => {
                 <div className='w-full h-1 bg-gradient' />
             </div>
             <div className='flex flex-col pt-6 gap-12 justify-start items-start'>
-                {localReviews?.map((review) => (
+                {reviews?.map((review) => (
                     <Review key={review._id} review={review} isEditable={review._id === currentUserReview?._id ? true : false} handleToggleEditing={handleToggleEditing} />
                 ))}
             </div>
