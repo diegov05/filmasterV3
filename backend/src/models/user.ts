@@ -6,8 +6,8 @@ const userSchema = new Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
     avatar: { type: String, required: true },
-    favorites: { type: [String] },
-    watchList: { type: [String] },
+    favorites: { type: [String], required: false },
+    watchList: { type: [String], required: false },
 }, { timestamps: true })
 
 type User = InferSchemaType<typeof userSchema>;
