@@ -11,6 +11,7 @@ import { DocumentData, collection, doc, onSnapshot } from 'firebase/firestore';
 import { VideoCameraIcon } from '@heroicons/react/24/outline';
 import { User } from '../../models/user';
 import { useUserDocument } from '../../hooks/useUserDocument';
+import { fetchUser } from '../../api/user_api';
 
 
 interface MovieHeaderProps {
@@ -74,9 +75,9 @@ const MovieHeader: FC<MovieHeaderProps> = (props) => {
     }
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userDocument = useUserDocument(user)
+                const userDocument = await fetchUser(user.uid)
                 setUserDocument(userDocument)
             } else {
             }
