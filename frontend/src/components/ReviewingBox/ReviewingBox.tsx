@@ -1,11 +1,11 @@
 import { StarIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { FC, useEffect, useState } from 'react'
 import { auth } from '../../firebase'
-import { User as FirestoreUser, onAuthStateChanged } from 'firebase/auth'
+import { onAuthStateChanged } from 'firebase/auth'
 import { Movie } from '../../interfaces/interfaces'
-import { Review } from '../../models/review'
 import { User } from '../../models/user'
-import { useUserDocument } from '../../hooks/useUserDocument'
+import { fetchUser } from '../../api/user_api'
+import { createReview } from '../../api/review_api'
 
 interface ReviewingBoxProps {
     movie: Movie
@@ -14,81 +14,49 @@ interface ReviewingBoxProps {
 
 const ReviewingBox: FC<ReviewingBoxProps> = (props) => {
 
-    const currentDate = new Date().toJSON().slice(0, 10);
-
     const { movie, handleToggleReviewing } = props
-
+    const mediaType = movie.title ? "movie" : "tv"
     const [rating, setRating] = useState(0);
-    const [user, setUser] = useState<FirestoreUser | null>(null);
     const [userDocument, setUserDocument] = useState<User | null>(null);
-    const [review, setReview] = useState<Review>(
-        {
-            _id: "",
-            author: userDocument ? userDocument : {
-                _id: "",
-                avatar: "",
-                createdAt: "",
-                favorites: [],
-                password: "",
-                updatedAt: "",
-                username: "",
-                watchList: []
-            },
-            content: "",
-            createdAt: currentDate,
-            updatedAt: currentDate,
-            dislikes: [],
-            likes: [],
-            rating: 0,
-            showId: "",
-            showType: ""
-        }
-    )
 
     const handleStarClick = (selectedRating: number) => {
         setRating(selectedRating);
     };
 
     const handleReviewSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        // e.preventDefault();
+        e.preventDefault();
 
-        // const form = e.target as HTMLFormElement;
-        // const reviewContent = form.reviewContent.value;
-        // const reviewRating = rating
+        const form = e.target as HTMLFormElement;
+        const reviewContent = form.reviewContent.value;
+        const reviewRating = rating
 
-        // const newReview = {
-        //     reviewId: doc(reviewsCollectionRef).id,
-        //     userId: user ? user.uid : "",
-        //     userName: user ? user.email : "",
-        //     date: review.date,
-        //     movieId: review.movieId,
-        //     mediaType: review.mediaType,
-        //     avatar: userData!.avatar,
-        //     reviewContent,
-        //     reviewRating,
-        // };
+        try {
+            if (userDocument)
+                await createReview({
+                    author: userDocument,
+                    content: reviewContent,
+                    rating: reviewRating,
+                    likes: [],
+                    dislikes: [],
+                    showType: mediaType,
+                    showId: movie.id.toString()
+                })
+            setRating(0);
+            window.location.reload();
+        } catch (error) {
+            console.error('Error adding review:', error);
+        }
 
-        // try {
-        //     await setDoc(doc(reviewsCollectionRef, newReview.reviewId), newReview);
-        //     console.log('Review added to Firestore successfully!');
-        //     setRating(0);
-        //     window.location.reload();
-        // } catch (error) {
-        //     console.error('Error adding review to Firestore:', error);
-        // }
-
-        // form.reviewContent.value = '';
-        // form.reviewRating.value = '';
+        form.reviewContent.value = '';
+        form.reviewRating.value = '';
     };
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
-                setUser(user);
-                const userDocument = useUserDocument(user)
+                const userDocument = await fetchUser(user.uid)
                 setUserDocument(userDocument)
             } else {
-                setUser(null);
             }
         });
         return () => unsubscribe();
