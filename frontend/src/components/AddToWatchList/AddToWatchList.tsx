@@ -1,12 +1,14 @@
 import { FC, useEffect, useState } from 'react'
 import { BookmarkIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 import { Movie } from '../../interfaces/interfaces'
-import { arrayRemove, arrayUnion, collection, doc, onSnapshot, updateDoc } from 'firebase/firestore'
 import { auth } from '../../firebase'
-import { User, onAuthStateChanged } from 'firebase/auth'
+import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
-import { useUserDocument } from '../../hooks/useUserDocument'
-import { fetchUser } from '../../api/user_api'
+import { fetchUser, updateUser } from '../../api/user_api'
+import { User } from '../../models/user'
+import Lottie from 'lottie-react'
+import images from "../../assets"
+
 
 interface AddToWatchListProps {
     movie: Movie
@@ -16,7 +18,9 @@ interface AddToWatchListProps {
 const AddToWatchList: FC<AddToWatchListProps> = (props) => {
 
     const [userFavorites, setUserFavorites] = useState<string[]>();
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<FirebaseUser | null>(null);
+    const [userDocument, setUserDocument] = useState<User | null>(null)
+    const [isLoading, setLoading] = useState(false);
     const { movie, type } = props
     const mediaType = movie.title ? "movie" : "tv"
     const navigate = useNavigate()
@@ -29,7 +33,7 @@ const AddToWatchList: FC<AddToWatchListProps> = (props) => {
                     return
                 } else {
                     const userDocument = await fetchUser(user.uid)
-                    setUserFavorites(userDocument?.favorites)
+                    setUserDocument(userDocument)
                 }
             } else {
                 setUser(null);
@@ -38,23 +42,38 @@ const AddToWatchList: FC<AddToWatchListProps> = (props) => {
         return () => unsubscribe();
     }, []);
 
-    const addToFavorites = (movieId: string, mediaType: string) => {
+    useEffect(() => {
+        if (userDocument) {
+            setUserFavorites(userDocument.favorites);
+        }
+    }, [userDocument]);
 
-        // const userFavoritesRef = doc(collection(db, 'users'), user?.uid);
+    const addToFavorites = async (movieId: string, mediaType: string) => {
+        setLoading(true);
 
-        // if (!userFavorites) {
-        //     return <div>Favorites not fetched.</div>
-        // }
+        const updatedFavorites = [...userDocument!.favorites];
 
-        // if (userFavorites.includes(`${movieId} ${mediaType}`)) {
-        //     updateDoc(userFavoritesRef, {
-        //         favorites: arrayRemove(`${movieId} ${mediaType}`),
-        //     });
-        // } else {
-        //     updateDoc(userFavoritesRef, {
-        //         favorites: arrayUnion(`${movieId} ${mediaType}`),
-        //     });
-        // }
+        if (updatedFavorites.includes(`${movieId} ${mediaType}`)) {
+            const index = updatedFavorites.indexOf(`${movieId} ${mediaType}`);
+            updatedFavorites.splice(index, 1);
+        } else {
+            updatedFavorites.push(`${movieId} ${mediaType}`);
+        }
+
+        try {
+            const updatedUser = await updateUser({
+                ...userDocument!,
+                favorites: updatedFavorites,
+            });
+
+            setUserDocument(updatedUser);
+            setUserFavorites(updatedUser.favorites);
+            console.log(updatedFavorites);
+        } catch (error) {
+            console.error("Error updating user:", error);
+        } finally {
+            setLoading(false)
+        }
     }
 
     if (!userFavorites) {
@@ -85,13 +104,21 @@ const AddToWatchList: FC<AddToWatchListProps> = (props) => {
                 <button onClick={() => addToFavorites(movie.id.toString(), mediaType)} className='flex flex-row gap-2 justify-center items-center px-5 py-3 bg-bg-color text-text-color rounded-2xl font-bold text-xs sm:max-4xl:text-lg transition-all hover:bg-text-color hover:text-bg-color'>
                     {!userFavorites.includes(`${movie.id} ${mediaType}`) ? (
                         <>
-                            Add to Watch List
-                            <BookmarkIcon className='sm:max-4xl:w-6 sm:max-4xl:h-6 w-4 h-4' />
+                            {isLoading ? <Lottie animationData={images.loading} className='w-4' /> :
+                                <>
+                                    Add to Watch List
+                                    <BookmarkIcon className='sm:max-4xl:w-6 sm:max-4xl:h-6 w-4 h-4' />
+                                </>
+                            }
                         </>
                     ) : (
                         <>
-                            In your Watch List
-                            <CheckCircleIcon className='sm:max-4xl:w-6 sm:max-4xl:h-6 w-4 h-4' />
+                            {isLoading ? <Lottie animationData={images.loading} className='w-4' /> :
+                                <>
+                                    In your Watch List
+                                    <CheckCircleIcon className='sm:max-4xl:w-6 sm:max-4xl:h-6 w-4 h-4' />
+                                </>
+                            }
                         </>
                     )}
                 </button>
@@ -119,7 +146,6 @@ const AddToWatchList: FC<AddToWatchListProps> = (props) => {
                                 </svg>
                             </>
                         )}
-
                     </span>
                 </>
             )
