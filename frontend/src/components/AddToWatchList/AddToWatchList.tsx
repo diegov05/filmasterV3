@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from 'react'
 import { BookmarkIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 import { Movie } from '../../interfaces/interfaces'
 import { auth } from '../../firebase'
-import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth'
+import { onAuthStateChanged } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
 import { fetchUser, updateUser } from '../../api/user_api'
 import { User } from '../../models/user'
@@ -18,7 +18,6 @@ interface AddToWatchListProps {
 const AddToWatchList: FC<AddToWatchListProps> = (props) => {
 
     const [userFavorites, setUserFavorites] = useState<string[]>();
-    const [user, setUser] = useState<FirebaseUser | null>(null);
     const [userDocument, setUserDocument] = useState<User | null>(null)
     const [isLoading, setLoading] = useState(false);
     const { movie, type } = props
@@ -28,7 +27,6 @@ const AddToWatchList: FC<AddToWatchListProps> = (props) => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
-                setUser(user);
                 if (!user) {
                     return
                 } else {
@@ -36,7 +34,6 @@ const AddToWatchList: FC<AddToWatchListProps> = (props) => {
                     setUserDocument(userDocument)
                 }
             } else {
-                setUser(null);
             }
         });
         return () => unsubscribe();
@@ -68,7 +65,7 @@ const AddToWatchList: FC<AddToWatchListProps> = (props) => {
 
             setUserDocument(updatedUser);
             setUserFavorites(updatedUser.favorites);
-            console.log(updatedFavorites);
+            window.location.reload()
         } catch (error) {
             console.error("Error updating user:", error);
         } finally {

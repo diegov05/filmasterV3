@@ -7,10 +7,8 @@ import images from "../../assets";
 import { AuthContext } from '../../contexts/AuthContext';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
-import { DocumentData, collection, doc, onSnapshot } from 'firebase/firestore';
 import { VideoCameraIcon } from '@heroicons/react/24/outline';
 import { User } from '../../models/user';
-import { useUserDocument } from '../../hooks/useUserDocument';
 import { fetchUser } from '../../api/user_api';
 
 

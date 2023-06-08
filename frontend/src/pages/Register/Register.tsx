@@ -2,7 +2,7 @@ import React, { FC, FormEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { auth } from '../../firebase'
 import { Loading, Notification } from '../../components'
-import { User, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth'
+import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth'
 import * as UserApi from "../../api/user_api"
 import images from '../../assets'
 import "./Register.css"
@@ -25,7 +25,6 @@ const Register: FC<RegisterProps> = () => {
     const [canShow, setCanShow] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
     const [iconIndex, setIconIndex] = useState<number>(0);
-    const [user, setUser] = useState<User | null>(null)
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -83,7 +82,6 @@ const Register: FC<RegisterProps> = () => {
             }, 3500)
 
             const { user } = await createUserWithEmailAndPassword(auth, email, password);
-            setUser(user)
 
             const input: UserApi.UserInput = {
                 email: email,

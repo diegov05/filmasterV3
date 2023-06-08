@@ -1,10 +1,9 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { Movie } from '../../interfaces/interfaces';
-import { User } from '../../models/user';
 import { key, requests } from '../../tmdbRequests';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Loading, MovieCard, MoviePoster, FilterButton } from '../../components';
-import { User as FirestoreUser, onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase';
 import images from "../../assets";
 import "./Carousel.css";
@@ -19,8 +18,6 @@ const Carousel: FC<CarouselProps> = (props) => {
     const [shows, setShows] = useState<Movie[]>([]);
     const [showLeftButton, setShowLeftButton] = useState<boolean>(false);
     const [userFavoriteMovies, setUserFavoriteMovies] = useState<Movie[]>([])
-    const [user, setUser] = useState<FirestoreUser | null>(null);
-    const [userDocument, setUserDocument] = useState<User | null>(null);
     const [index, setIndex] = useState<number>(0)
 
     const content = props.content;
@@ -100,9 +97,7 @@ const Carousel: FC<CarouselProps> = (props) => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
-                setUser(user)
                 const userDocument = await fetchUser(user.uid)
-                setUserDocument(userDocument)
 
                 const userFavoritesData = userDocument.favorites
                 const stringIds: string[] = [];
@@ -124,7 +119,6 @@ const Carousel: FC<CarouselProps> = (props) => {
                 };
                 fetchMovies();
             } else {
-                setUser(null);
             }
         });
         return () => unsubscribe();
