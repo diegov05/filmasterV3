@@ -1,6 +1,7 @@
 import { HandThumbDownIcon, HandThumbUpIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { FC, useState } from 'react'
 import { Reply } from '../../models/reply';
+import { deleteReply } from '../../api/reply_api';
 
 interface ReplyProps {
     reply: Reply
@@ -37,14 +38,12 @@ const Reply: FC<ReplyProps> = (props) => {
     }
 
     const handleDeleteReply = async () => {
-        // try {
-        //     const repliesCollectionRef = collection(db, 'replies');
-        //     await deleteDoc(doc(repliesCollectionRef, reply.replyId));
-        //     console.log('Reply deleted from Firestore successfully!');
-        //     window.location.reload();
-        // } catch (error) {
-        //     console.error('Error deleting reply from Firestore:', error);
-        // }
+        try {
+            await deleteReply(reply._id)
+            window.location.reload();
+        } catch (error) {
+            console.error('Error deleting reply:', error);
+        }
     };
 
     return (
