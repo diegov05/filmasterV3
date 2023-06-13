@@ -8,6 +8,7 @@ import { auth } from '../../firebase'
 import { User } from '../../models/user'
 import { fetchUser } from '../../api/user_api'
 import Lottie from 'lottie-react'
+import { UserIcon } from '@heroicons/react/24/outline'
 
 interface NavBarProps {
 
@@ -23,6 +24,8 @@ const NavBar: FC<NavBarProps> = () => {
     const [isFocused, setIsFocused] = useState<boolean>(false);
 
     const userRef = useRef<HTMLDivElement>(null);
+
+    console.log(userDocument)
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -95,7 +98,11 @@ const NavBar: FC<NavBarProps> = () => {
                                 </div>
                             }
                             <button onFocus={handleFocus} onClick={handleToggleMenu} className='px-5 py-3 bg-bg-color rounded-2xl flex flex-row justify-between items-center text-text-color transition-all hover:bg-accent-color gap-3'>
-                                {userDocument ? <img src={userDocument?.avatar} className='w-4 h-4' /> : <Lottie animationData={images.loading} className='w-4' />}
+                                {userDocument ?
+                                    <object data={userDocument.avatar} className='w-4 h-4' type="image/jpeg">
+                                        <UserIcon className='w-4 h-4 text-text-color' />
+                                    </object> :
+                                    <Lottie animationData={images.loading} className='w-4 h-4' />}
                                 <ChevronDownIcon className='w-4 h-4' />
                             </button>
                         </div>
