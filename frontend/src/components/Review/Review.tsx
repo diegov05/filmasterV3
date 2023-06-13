@@ -10,8 +10,6 @@ import { Review } from '../../models/review';
 import { deleteReview, updateReview } from '../../api/review_api';
 import { createReply, fetchReplies } from '../../api/reply_api';
 import { fetchUser } from '../../api/user_api';
-import Lottie from 'lottie-react';
-import images from "../../assets"
 
 interface ReviewProps {
     review: Review
