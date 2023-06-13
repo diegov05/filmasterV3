@@ -76,13 +76,17 @@ const Review: FC<ReviewProps> = (props) => {
     const handleUploadReply = async () => {
         try {
             if (!replyContent) return;
+            if (!userDocument) return
 
             await createReply({
+                author: userDocument,
                 content: replyContent,
                 parent: review._id,
                 likes: [],
                 dislikes: []
             })
+
+            window.location.reload()
 
         } catch (error) {
             console.error('Error uploading reply:', error);
