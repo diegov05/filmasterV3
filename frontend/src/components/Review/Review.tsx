@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { HandThumbDownIcon, HandThumbUpIcon, PencilSquareIcon, TrashIcon, PaperAirplaneIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { HandThumbDownIcon, HandThumbUpIcon, PencilSquareIcon, TrashIcon, PaperAirplaneIcon, ChevronDownIcon, ChevronUpIcon, UserIcon } from '@heroicons/react/24/outline';
 import { auth } from '../../firebase';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +10,8 @@ import { Review } from '../../models/review';
 import { deleteReview, updateReview } from '../../api/review_api';
 import { createReply, fetchReplies } from '../../api/reply_api';
 import { fetchUser } from '../../api/user_api';
-
+import Lottie from 'lottie-react';
+import images from "../../assets"
 
 interface ReviewProps {
     review: Review
@@ -33,7 +34,6 @@ const Review: FC<ReviewProps> = (props) => {
 
     const filteredReplies = replies.filter((reply) => reply.parent === review._id);
 
-    // Handle the like-dislike logic
     const handleLikeOrDislike = async (index: number) => {
         const updated = { ...updatedReview };
         if (!userDocument) {
@@ -169,8 +169,11 @@ const Review: FC<ReviewProps> = (props) => {
 
             </div>
             {
+                //w-6 h-6 md:max-4xl:w-10 md:max-4xl:h-10
                 isReplying && <div className='flex flew-row justify-start items-center gap-2'>
-                    <img className='w-6 h-6 md:max-4xl:w-10 md:max-4xl:h-10' src={userDocument?.avatar} alt={userDocument?.username} />
+                    <object data={userDocument?.avatar} className='w-4 h-4' type="image/jpeg">
+                        <UserIcon className='w-4 h-4 text-text-color' />
+                    </object>
                     <div className='flex flex-row gap-2'>
                         <input type="text" className='px-5 py-2 md:max-4xl:py-3 rounded-2xl bg-zinc-300 border-b focus:outline-none text-xs' placeholder='Write a reply...'
                             value={replyContent}
