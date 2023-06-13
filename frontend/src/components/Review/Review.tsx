@@ -7,7 +7,7 @@ import { Reply as ReplyModel } from '../../models/reply';
 import { Reply } from '../Reply/Reply';
 import { User } from '../../models/user';
 import { Review } from '../../models/review';
-import { deleteReview } from '../../api/review_api';
+import { deleteReview, updateReview } from '../../api/review_api';
 import { createReply, fetchReplies } from '../../api/reply_api';
 import { fetchUser } from '../../api/user_api';
 
@@ -23,37 +23,48 @@ const Review: FC<ReviewProps> = (props) => {
     const { review, isEditable, handleToggleEditing } = props
     const navigate = useNavigate()
 
-    const [isLikeSelected, setIsLikeSelected] = useState<boolean>()
-    const [isDislikeSelected, setIsDislikeSelected] = useState<boolean>()
     const [isReplying, setIsReplying] = useState<boolean>()
     const [isRepliesShowing, setIsRepliesShowing] = useState<boolean>(false)
     const [user, setUser] = useState<FirebaseUser | null>(null);
     const [userDocument, setUserDocument] = useState<User | undefined>();
     const [replyContent, setReplyContent] = useState<string>("");
     const [replies, setReplies] = useState<ReplyModel[]>([])
+    const [updatedReview, setUpdatedReview] = useState<Review>(review);
 
     const filteredReplies = replies.filter((reply) => reply.parent === review._id);
 
-    const handleLikeOrDislike = (index: number) => {
+    // Handle the like-dislike logic
+    const handleLikeOrDislike = async (index: number) => {
+        const updated = { ...updatedReview };
+        if (!userDocument) {
+            return
+        }
+
         switch (index) {
             case 0:
-                if (isLikeSelected) {
-                    setIsLikeSelected(false)
+                if (updated.likes.includes(userDocument?._id)) {
+                    updated.likes = updated.likes.filter((like) => like !== userDocument?._id);
                 } else {
-                    setIsLikeSelected(true)
-                    setIsDislikeSelected(false)
+                    updated.likes.push(userDocument?._id);
+                    updated.dislikes = updated.dislikes.filter((dislike) => dislike !== userDocument?._id);
                 }
                 break;
             case 1:
-                if (isDislikeSelected) {
-                    setIsDislikeSelected(false)
+                if (updated.dislikes.includes(userDocument?._id)) {
+                    updated.dislikes = updated.dislikes.filter((dislike) => dislike !== userDocument?._id);
                 } else {
-                    setIsDislikeSelected(true)
-                    setIsLikeSelected(false)
+                    updated.dislikes.push(userDocument?._id);
+                    updated.likes = updated.likes.filter((like) => like !== userDocument?._id);
                 }
                 break;
         }
-    }
+
+        setUpdatedReview(updated);
+        await updateReview({
+            authorId: userDocument._id,
+            ...updated
+        });
+    };
 
     const handleDeleteReview = async () => {
         try {
@@ -106,7 +117,7 @@ const Review: FC<ReviewProps> = (props) => {
             }
         }
         loadReplies()
-    }, [review._id]);
+    }, [review._id])
 
     return (
         <div className='flex flex-col gap-4 justify-start items-start'>
@@ -130,11 +141,13 @@ const Review: FC<ReviewProps> = (props) => {
                 <p className='text-xs md:max-4xl:text-base md:max-4xl:w-[80ch]'>{review.content.slice(0, 200)}{review.content?.length! > 200 ? "..." : ""}</p>
             </div>
             <div className='flex flex-row gap-2 flex-wrap'>
-                <button onClick={() => handleLikeOrDislike(0)} className={`shadow-sm shadow-zinc-500 flex flex-row gap-2 justify-center items-center px-5 py-1 sm:max-4xl:py-2 bg-button-primary-color text-bg-color rounded-2xl font-bold text-[10px] sm:max-4xl:text-sm transition-all ${isLikeSelected ? "bg-green-500" : "hover:bg-accent-color hover:text-text-color"}`}>
+                <button onClick={() => handleLikeOrDislike(0)} className={`shadow-sm shadow-zinc-500 flex flex-row gap-2 justify-center items-center px-5 py-1 sm:max-4xl:py-2 bg-button-primary-color text-bg-color rounded-2xl font-bold text-[10px] sm:max-4xl:text-sm transition-all ${userDocument ? updatedReview.likes.includes(userDocument?._id) ? "bg-green-500" : "" : ""}`}>
                     <HandThumbUpIcon className='w-3 h-3 sm:max-4xl:w-4 sm:max-4xl:h-4' />
+                    {updatedReview ? updatedReview.likes.length : review.likes.length}
                 </button>
-                <button onClick={() => handleLikeOrDislike(1)} className={`shadow-sm shadow-zinc-500 flex flex-row gap-2 justify-center items-center px-5 py-1 sm:max-4xl:py-2 bg-white text-text-color rounded-2xl font-bold text-[10px] sm:max-4xl:text-sm transition-all ${isDislikeSelected ? "bg-red-500" : "hover:bg-accent-color hover:text-text-color"}`}>
+                <button onClick={() => handleLikeOrDislike(1)} className={`shadow-sm shadow-zinc-500 flex flex-row gap-2 justify-center items-center px-5 py-1 sm:max-4xl:py-2  text-text-color rounded-2xl font-bold text-[10px] sm:max-4xl:text-sm transition-all ${userDocument ? updatedReview.dislikes.includes(userDocument?._id) ? "bg-custom-red" : "" : ""}`}>
                     <HandThumbDownIcon className='w-3 h-3 sm:max-4xl:w-4 sm:max-4xl:h-4' />
+                    {updatedReview ? updatedReview.dislikes.length : review.dislikes.length}
                 </button>
                 {!isEditable &&
                     <button onClick={() => {
