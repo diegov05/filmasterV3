@@ -85,7 +85,7 @@ const EditingBox: FC<EditingBoxProps> = (props) => {
                                     />
                                 ))}
                             </div>
-                            <textarea style={{ resize: 'none' }} className='max-w-full w-44 xs:w-52 md:max-4xl:w-full px-5 py-3 rounded-2xl' placeholder={review.content} name="reviewContent" id="reviewContent" cols={20} rows={10}>
+                            <textarea style={{ resize: 'none' }} className='max-w-full w-44 xs:w-52 md:max-4xl:w-full px-5 py-3 rounded-2xl outline-none border-none focus:outline-none focus:border-none' placeholder={review.content} name="reviewContent" id="reviewContent" cols={20} rows={10}>
                             </textarea>
                             <button type='submit' className='bg-gradient cursor-pointer transition-all duration-300 hover:opacity-80 py-3 sm:max-4xl:py-2 pw-16 rounded-2xl font-bold sm:max-4xl:text-sm text-bg-color'>Post Review
                             </button>
