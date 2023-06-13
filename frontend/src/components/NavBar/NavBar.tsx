@@ -25,8 +25,6 @@ const NavBar: FC<NavBarProps> = () => {
 
     const userRef = useRef<HTMLDivElement>(null);
 
-    console.log(userDocument)
-
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (userRef.current && !userRef.current.contains(event.target as Node)) {
