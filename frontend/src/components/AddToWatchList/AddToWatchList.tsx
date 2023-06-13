@@ -65,7 +65,9 @@ const AddToWatchList: FC<AddToWatchListProps> = (props) => {
 
             setUserDocument(updatedUser);
             setUserFavorites(updatedUser.favorites);
-            window.location.reload()
+            if (type !== "button") {
+                window.location.reload()
+            }
         } catch (error) {
             console.error("Error updating user:", error);
         } finally {
