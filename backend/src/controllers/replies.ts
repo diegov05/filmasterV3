@@ -44,6 +44,7 @@ interface CreateReplyBody {
 
 export const createReply: RequestHandler<unknown, unknown, CreateReplyBody, unknown> = async (req, res, next) => {
 
+    const replyAuthor = req.body.author
     const replyContent = req.body.content
     const replyParent = req.body.parent
     const replyLikes = req.body.likes
@@ -51,6 +52,9 @@ export const createReply: RequestHandler<unknown, unknown, CreateReplyBody, unkn
 
     try {
 
+        if (!replyAuthor) {
+            throw createHttpError(400, "Reply must have an author.")
+        }
         if (!replyContent) {
             throw createHttpError(400, "Reply must not be empty.")
         }
@@ -58,12 +62,12 @@ export const createReply: RequestHandler<unknown, unknown, CreateReplyBody, unkn
             throw createHttpError(400, "Reply must have a parent.")
         }
 
-
         const newReply = await ReplyModel.create({
-            replyContent: replyContent,
-            replyParent: replyParent,
-            replyLikes: replyLikes,
-            replyDislikes: replyDislikes,
+            author: replyAuthor,
+            content: replyContent,
+            parent: replyParent,
+            likes: replyLikes,
+            dislikes: replyDislikes,
         })
 
         res.status(201).json(newReply)

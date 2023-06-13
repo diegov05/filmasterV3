@@ -1,4 +1,5 @@
 import { Reply } from '../models/reply';
+import { User } from '../models/user';
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
     const response = await fetch(input, init);
@@ -37,6 +38,7 @@ export async function fetchCurrentUserReplies(userId: string): Promise<Reply[]> 
 }
 
 export interface ReplyInput {
+    author: User
     content: string
     parent: string
     likes: string[]
@@ -44,6 +46,13 @@ export interface ReplyInput {
 }
 
 export async function createReply(reply: ReplyInput): Promise<Reply> {
+
+    const { author, content, parent } = reply;
+
+    if (!content || !parent || !author) {
+        throw new Error("Reply must have author, content, and parent.");
+    }
+
     const response = await fetchData("/api/replies",
         {
             method: "POST",
