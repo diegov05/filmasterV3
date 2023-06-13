@@ -92,9 +92,14 @@ const Reviews: FC<ReviewsProps> = (props) => {
                 <div className='w-full h-1 bg-gradient' />
             </div>
             <div className='flex flex-col pt-6 gap-12 justify-start items-start'>
-                {reviews?.map((review) => (
+                {reviews?.length! > 0 ? reviews?.map((review) => (
                     <Review key={review._id} review={review} isEditable={review._id === currentUserReview?._id ? true : false} handleToggleEditing={handleToggleEditing} />
-                ))}
+                )) : (
+                    <div>
+                        Be the <b>first one</b> in reviewing this show! <br />
+                        You can write a review by pressing the <b>+ Review</b> button below!
+                    </div>
+                )}
             </div>
             {!currentUserReview && <button onClick={user ? handleToggleReviewing : () => navigate('/login')} className='w-max flex flex-row gap-2 justify-center items-center px-5 py-3 bg-button-primary-color text-bg-color rounded-2xl font-bold text-xs sm:max-4xl:text-lg transition-all hover:bg-accent-color hover:text-text-color'>
                 + Review
