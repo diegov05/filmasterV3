@@ -17,24 +17,12 @@ export async function fetchReplies(): Promise<Reply[]> {
     return response.json();
 }
 
-export async function fetchCurrentUserReply(userId: string): Promise<Reply> {
+
+export async function fetchReply(replyId: string): Promise<Reply> {
     const replies = await fetchReplies();
-    const filteredReply = replies.find((reply: Reply) => reply._id === userId);
+    const filteredReply = replies.find((reply: Reply) => reply._id === replyId);
     const response = await fetchData(`/api/replies/${filteredReply?._id}`)
     return response.json()
-}
-
-export async function fetchCurrentUserReplies(userId: string): Promise<Reply[]> {
-    const replies = await fetchReplies();
-    const filteredReplies = replies.filter((reply: Reply) => reply.author._id === userId);
-
-    const responsePromises = filteredReplies.map((reply: Reply) => fetchData(`/api/replies/${reply._id}`));
-    const responses = await Promise.all(responsePromises);
-
-    const replyDataPromises = responses.map((response) => response.json());
-    const replyData = await Promise.all(replyDataPromises);
-
-    return replyData;
 }
 
 export interface ReplyInput {
@@ -65,6 +53,7 @@ export async function createReply(reply: ReplyInput): Promise<Reply> {
 }
 
 export interface UpdateReplyInput {
+    _id: string
     authorId: string
     content?: string
     likes?: string[]
@@ -72,7 +61,7 @@ export interface UpdateReplyInput {
 }
 
 export async function updateReply(reply: UpdateReplyInput): Promise<Reply> {
-    const replyDocument = await fetchCurrentUserReply(reply.authorId)
+    const replyDocument = await fetchReply(reply._id)
     const response = await fetchData(`/api/replies/${replyDocument._id}`,
         {
             method: "PATCH",
