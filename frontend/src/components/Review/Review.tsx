@@ -147,7 +147,7 @@ const Review: FC<ReviewProps> = (props) => {
                     <HandThumbUpIcon className='w-3 h-3 sm:max-4xl:w-4 sm:max-4xl:h-4' />
                     {updatedReview ? updatedReview.likes.length : review.likes.length}
                 </button>
-                <button onClick={() => handleLikeOrDislike(1)} className={`shadow-sm shadow-zinc-500 flex flex-row gap-2 justify-center items-center px-5 py-1 sm:max-4xl:py-2 text-text-color rounded-2xl font-bold text-[10px] sm:max-4xl:text-sm transition-all ${userDocument ? updatedReview.dislikes.includes(userDocument?._id) ? "bg-custom-red" : "" : ""}`}>
+                <button onClick={() => handleLikeOrDislike(1)} className={`shadow-sm shadow-zinc-500 flex flex-row gap-2 justify-center items-center px-5 py-1 sm:max-4xl:py-2 text-text-color rounded-2xl font-bold text-[10px] sm:max-4xl:text-sm transition-all ${userDocument ? updatedReview.dislikes.includes(userDocument?._id) ? "bg-red-500" : "" : ""}`}>
                     <HandThumbDownIcon className='w-3 h-3 sm:max-4xl:w-4 sm:max-4xl:h-4' />
                     {updatedReview ? updatedReview.dislikes.length : review.dislikes.length}
                 </button>
@@ -171,7 +171,6 @@ const Review: FC<ReviewProps> = (props) => {
 
             </div>
             {
-                //w-6 h-6 md:max-4xl:w-10 md:max-4xl:h-10
                 isReplying && <div className='flex flew-row justify-start items-center gap-2'>
                     <object data={userDocument?.avatar} className='w-4 h-4' type="image/jpeg">
                         <UserIcon className='w-4 h-4 text-text-color' />
