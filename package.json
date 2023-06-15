@@ -29,6 +29,9 @@
         "ts-node": "^10.9.1",
         "typescript": "^5.0.4"
     },
+    "engines": {
+        "node": "18.x"
+    },
     "devDependencies": {
         "@types/http-errors": "^2.0.1",
         "@types/morgan": "^1.9.4",
