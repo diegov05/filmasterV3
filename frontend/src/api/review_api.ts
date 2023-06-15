@@ -17,9 +17,9 @@ export async function fetchReviews(): Promise<Review[]> {
     return response.json();
 }
 
-export async function fetchCurrentUserReview(userId: string): Promise<Review> {
+export async function fetchReview(reviewId: string): Promise<Review> {
     const reviews = await fetchReviews();
-    const filteredReview = reviews.find((review: Review) => review.author._id === userId);
+    const filteredReview = reviews.find((review: Review) => review._id === reviewId);
     const response = await fetchData(`/api/reviews/${filteredReview?._id}`)
     return response.json()
 }
@@ -48,6 +48,7 @@ export async function createReview(review: ReviewInput): Promise<Review> {
 
 export interface UpdateReviewInput {
     authorId: string
+    _id: string
     content?: string
     rating?: number
     likes?: string[]
@@ -55,7 +56,7 @@ export interface UpdateReviewInput {
 }
 
 export async function updateReview(review: UpdateReviewInput): Promise<Review> {
-    const reviewDocument = await fetchCurrentUserReview(review.authorId)
+    const reviewDocument = await fetchReview(review._id)
     const response = await fetchData(`/api/reviews/${reviewDocument._id}`,
         {
             method: "PATCH",
