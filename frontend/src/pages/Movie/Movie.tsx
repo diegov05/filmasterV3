@@ -1,5 +1,6 @@
 import { FC, useEffect, useState } from 'react';
-import { Movie, Review } from '../../interfaces/interfaces';
+import { Movie } from '../../interfaces/interfaces';
+import { Review } from '../../models/review';
 import { useLocation, useParams } from 'react-router-dom';
 import { key } from '../../tmdbRequests';
 import { MovieHeader, Footer, MovieDetails, Trailer, Overview, Reviews, Cast } from '../../containers';
@@ -19,7 +20,26 @@ const Movie: FC<MovieProps> = () => {
     const [isReviewing, setIsReviewing] = useState<boolean>(false)
     const [isEditing, setIsEditing] = useState<boolean>(false)
     const [review, setReview] = useState<Review>({
-
+        _id: "",
+        author: {
+            _id: "",
+            avatar: "",
+            createdAt: "",
+            favorites: [],
+            firebaseId: "",
+            password: "",
+            updatedAt: "",
+            username: "",
+            watchList: []
+        },
+        content: "",
+        createdAt: "",
+        dislikes: [],
+        likes: [],
+        rating: 0,
+        showId: "",
+        showType: "",
+        updatedAt: ""
     })
 
     const movieId = useParams();

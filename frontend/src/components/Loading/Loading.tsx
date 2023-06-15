@@ -8,9 +8,6 @@ interface LoadingProps {
 
 const Loading: React.FC<LoadingProps> = () => {
     const size = 40;
-    const strokeWidth = 5;
-    const radius = (size - strokeWidth) / 2;
-    const circumference = 2 * Math.PI * radius;
 
     return (
         <svg

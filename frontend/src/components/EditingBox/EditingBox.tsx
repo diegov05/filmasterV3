@@ -31,6 +31,7 @@ const EditingBox: FC<EditingBoxProps> = (props) => {
         try {
             if (userDocument)
                 await updateReview({
+                    _id: review._id,
                     authorId: userDocument._id,
                     content: reviewContent,
                     rating: reviewRating,
