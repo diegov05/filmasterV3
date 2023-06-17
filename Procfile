@@ -1,1 +1,1 @@
-web: pnpm start --prefix backend
+web:pnpm start --prefix backend
